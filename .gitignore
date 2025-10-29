@@ -1,0 +1,18 @@
+# Node / Vite
+client/node_modules/
+client/dist/
+
+# Java / Gradle
+server/build/
+server/.gradle/
+
+# Docker local volumes (isim verdiysen)
+**/mongo_data/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
