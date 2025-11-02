@@ -20,6 +20,13 @@ public class JwtService {
     }
 
     public String generateToken(String userEmail, Map<String, Object> extraClaims) {
+
+        if(extraClaims == null){
+            extraClaims = Map.of();
+
+        }
+
+
         return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(userEmail)
