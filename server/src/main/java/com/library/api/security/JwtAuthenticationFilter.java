@@ -1,6 +1,5 @@
 package com.library.api.security;
 
-import com.library.api.auth.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -19,41 +19,37 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final CustomUserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+                                    FilterChain filterChain) throws ServletException, IOException {
 
-        // ✅ Gerçek path'i al
-        final String path = request.getRequestURI();
-        System.out.println("👉 Incoming path: " + path);
-
-        // ✅ /api/auth altındaki tüm endpointleri JWT filtresinden muaf tut
-        if (path.startsWith("/api/auth")) {
-            System.out.println("⏩ Skipping JWT Filter for: " + path);
+        String path = request.getServletPath();
+        // 1) Auth endpoint'lerini tamamen bypass et
+        if (path.startsWith("/api/auth/")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // ✅ Authorization header kontrolü
-        final String authHeader = request.getHeader("Authorization");
+        // 2) Authorization header yoksa: ASLA 401 VERME, zinciri bırak
+        String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwt = authHeader.substring(7);
-        final String userEmail = jwtService.extractUsername(jwt);
+        String jwt = authHeader.substring(7);
+        String username = jwtService.extractUsername(jwt); // exp/issuer vb. validasyonları içinde yap
 
-        // ✅ Token geçerliyse SecurityContext'e kullanıcıyı yerleştir
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            var user = userRepository.findByEmail(userEmail).orElse(null);
-            if (user != null && jwtService.isTokenValid(jwt, user.getEmail())) {
+        // 3) Context boş ve token geçerliyse authenticate et
+        // 4 kasım, yine soktuğum sayfaya döndüm
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userdetails = userDetailsService.loadUserByUsername(username);
+            if (jwtService.isTokenValid(jwt, userdetails.getUsername())) {
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(user, null, null);
+                        new UsernamePasswordAuthenticationToken(userdetails, null, userdetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }

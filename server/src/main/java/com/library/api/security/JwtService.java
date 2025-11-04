@@ -1,10 +1,11 @@
 package com.library.api.security;
 
-
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
@@ -13,25 +14,29 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private static final String SECRET_KEY = "supersecretkeysupersecretkeysupersecretkey"; // TODO: move to .env
+    @Value("${app.jwt.secret:supersecretkeysupersecretkeysupersecretkey}")
+    private String secret;
+
+    @Value("${app.jwt.expiration-ms:86400000}") // default: 1 gün
+    private long expirationMs;
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String generateToken(String userEmail) {
+        return generateToken(userEmail, Map.of());
     }
 
     public String generateToken(String userEmail, Map<String, Object> extraClaims) {
-
-        if(extraClaims == null){
-            extraClaims = Map.of();
-
-        }
-
+        Date now = new Date();
+        Date exp = new Date(now.getTime() + expirationMs);
 
         return Jwts.builder()
-                .setClaims(extraClaims)
+                .setClaims(extraClaims == null ? Map.of() : extraClaims)
                 .setSubject(userEmail)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 1 gün
+                .setIssuedAt(now)
+                .setExpiration(exp)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -41,24 +46,32 @@ public class JwtService {
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
+        Claims claims = parseClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
     public boolean isTokenValid(String token, String userEmail) {
-        final String username = extractUsername(token);
-        return (username.equals(userEmail)) && !isTokenExpired(token);
+        try {
+            String subject = extractUsername(token);
+            return subject != null && subject.equals(userEmail) && !isTokenExpired(token);
+        } catch (JwtException | IllegalArgumentException e) {
+            // imza/format/exp hatalarında güvenli şekilde geçersiz say
+            return false;
+        }
     }
 
     private boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+        Date exp = extractClaim(token, Claims::getExpiration);
+        return exp.before(new Date());
+    }
+
+    private Claims parseClaims(String token) {
+        // Küçük saat kaymaları için 60 sn tolerans
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .setAllowedClockSkewSeconds(60)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
