@@ -1,5 +1,4 @@
-
-version: "3.8"
+version: "3.9"
 services:
   mongo:
     image: mongo:7.0
@@ -17,8 +16,12 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
+    env_file:
+      - .env
     environment:
       - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/librarydb
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION_MS=${JWT_EXPIRATION_MS}
     restart: always
 
 volumes:
