@@ -1,0 +1,16 @@
+# Geliştirme ortamı için Vite dev server
+FROM node:22.12.0
+WORKDIR /app
+
+# Paketleri yükle
+COPY package*.json ./
+RUN npm install
+
+# Kodları kopyala
+COPY . .
+
+# Vite sunucusunu dışarı aç
+EXPOSE 5173
+
+# Hot-reload destekli çalıştır
+CMD ["npm", "run", "dev", "--", "--host"]
