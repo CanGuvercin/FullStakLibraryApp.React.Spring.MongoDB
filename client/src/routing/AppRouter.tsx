@@ -41,8 +41,8 @@ export default function AppRouter() {
         <Route path="/register" element={<RegisterPage/>}/>
         <Route path="/login" element={<LoginPage/>}/>
         <Route path="/admin" element={<AdminDashboardPage/>}/>
+        <Route path="/admin/books" element={<BooksAdminPanel/>}  />
         <Route path="/books/:id" element={<BookDetailPage />} />
-        <Route path="/books/books" element={<BooksAdminPanel/>}/>
         <Route path="/me" element={<MyProfilePage/>}/>
         <Route path="/me/my-holdings" element={<MyHoldsPage/>}/>
         <Route path="/me/my-loans" element={<MyLoansPage/>} />

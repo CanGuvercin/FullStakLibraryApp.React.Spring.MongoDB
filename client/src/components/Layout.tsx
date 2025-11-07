@@ -8,6 +8,17 @@ export default function Layout() {
         <h1 className="text-xl font-semibold text-blue-600">Library App</h1>
         <nav className="space-x-6">
           <NavLink
+            to="/me"
+            className={({ isActive }) =>
+              isActive
+                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 hover:text-blue-500"
+            }
+          >
+            My Profile
+          </NavLink>
+
+          <NavLink
             to="/books"
             className={({ isActive }) =>
               isActive
@@ -38,6 +49,17 @@ export default function Layout() {
             }
           >
             Settings
+          </NavLink>
+
+          <NavLink
+            to="/login"
+            className={({ isActive }) =>
+              isActive
+                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 hover:text-blue-500"
+            }
+          >
+            Login
           </NavLink>
         </nav>
       </header>
