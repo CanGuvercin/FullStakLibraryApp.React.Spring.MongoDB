@@ -1,6 +1,14 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import BooksPage from "../pages/BooksPage";
+import RegisterPage from "../pages/RegisterPage";
+import LoginPage from "../pages/LoginPage";
+import AdminDashboardPage from "../pages/AdminDashboardPage";
+import BookDetailPage from "../pages/BookDetailPage";
+import BooksAdminPanel from "../pages/BooksAdminPanel"
+import MyProfilePage from "../pages/MyProfilePage";
+import MyHoldsPage from "../pages/MyHoldsPage";
+import MyLoansPage from "../pages/MyLoansPage";
 
 
 /*function BooksPage() {
@@ -30,6 +38,14 @@ export default function AppRouter() {
         <Route path="/books" element={<BooksPage />} />
         <Route path="/members" element={<MembersPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/register" element={<RegisterPage/>}/>
+        <Route path="/login" element={<LoginPage/>}/>
+        <Route path="/admin" element={<AdminDashboardPage/>}/>
+        <Route path="/books/:id" element={<BookDetailPage />} />
+        <Route path="/books/books" element={<BooksAdminPanel/>}/>
+        <Route path="/me" element={<MyProfilePage/>}/>
+        <Route path="/me/my-holdings" element={<MyHoldsPage/>}/>
+        <Route path="/me/my-loans" element={<MyLoansPage/>} />
       </Route>
 
       {/* Yakalanamayan tüm rotalar */}
