@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
 
 export default function Layout() {
   return (
@@ -6,14 +6,43 @@ export default function Layout() {
       {/* Navbar */}
       <header className="bg-white shadow-md py-4 px-8 flex justify-between items-center">
         <h1 className="text-xl font-semibold text-blue-600">Library App</h1>
-        <nav className="space-x-4">
-          <a href="/books" className="hover:text-blue-500">Books</a>
-          <a href="/members" className="hover:text-blue-500">Members</a>
-          <a href="/settings" className="hover:text-blue-500">Settings</a>
+        <nav className="space-x-6">
+          <NavLink
+            to="/books"
+            className={({ isActive }) =>
+              isActive
+                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 hover:text-blue-500"
+            }
+          >
+            Books
+          </NavLink>
+
+          <NavLink
+            to="/members"
+            className={({ isActive }) =>
+              isActive
+                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 hover:text-blue-500"
+            }
+          >
+            Members
+          </NavLink>
+
+          <NavLink
+            to="/settings"
+            className={({ isActive }) =>
+              isActive
+                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 hover:text-blue-500"
+            }
+          >
+            Settings
+          </NavLink>
         </nav>
       </header>
 
-      {/* Outlet ile alt sayfalar */}
+      {/* Sayfa içeriği */}
       <main className="flex-1 container mx-auto px-6 py-8">
         <Outlet />
       </main>
