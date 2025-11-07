@@ -1,9 +1,11 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import BooksPage from "../pages/BooksPage";
 
-function BooksPage() {
+
+/*function BooksPage() {
   return <div className="p-4">📚 Books Page</div>;
-}
+}*/
 
 function MembersPage() {
   return <div className="p-4">👥 Members Page</div>;

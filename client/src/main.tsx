@@ -8,8 +8,9 @@ import './index.css';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      refetchOnWindowFocus: false,
-      retry: 1,
+      refetchOnWindowFocus: false, // pencereye dönünce tekrar fetch etme
+      retry: 1,                    // hata alınca sadece 1 kez denicek
+      staleTime: 1000 * 60 * 5,    // 5 dakika cache süresi
     },
   },
 });
