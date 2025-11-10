@@ -1,5 +1,6 @@
 package com.library.api.controller;
 
+import com.library.api.book.BookDetailDto;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -10,11 +11,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/books")
-@CrossOrigin(origins = "http://localhost:5173") // frontend'e izin
+@CrossOrigin(origins = "http://localhost:5173")
 public class BookController {
 
     @GetMapping
-    @PermitAll // GEÇİCİ TEST İÇİN, REMOVE IT AS SOON AS POSSIBLE
+    @PermitAll
     public List<Map<String, String>> getAllBooks() {
         return List.of(
                 Map.of("id", "1", "title", "Clean Code", "author", "Robert C. Martin"),
@@ -22,23 +23,38 @@ public class BookController {
         );
     }
 
-
     @GetMapping("/{id}")
     @PermitAll
-    public Map<String, String> getBookById(@PathVariable String id) {
+    public BookDetailDto getBookById(@PathVariable String id) {
         if (id.equals("1")) {
-            return Map.of(
-                    "id", "1",
-                    "title", "Clean Code",
-                    "author", "Robert C. Martin",
-                    "description", "A handbook of agile software craftsmanship."
+            return new BookDetailDto(
+                    "1",
+                    "Clean Code",
+                    List.of("Robert C. Martin"),
+                    List.of("Programming", "Clean Code"),
+                    "A handbook of agile software craftsmanship.",
+                    null,
+                    "copy-001",
+                    false,
+                    false,
+                    null,
+                    null,
+                    3
             );
         } else if (id.equals("2")) {
-            return Map.of(
-                    "id", "2",
-                    "title", "The Pragmatic Programmer",
-                    "author", "Andrew Hunt",
-                    "description", "Journey to mastery for modern developers."
+            return new BookDetailDto(
+                    "2",
+                    "The Pragmatic Programmer",
+                    List.of("Andrew Hunt"),
+                    List.of("Software Engineering", "Career"),
+                    "Journey to mastery for modern developers.",
+                    null,
+                    null,
+                    false,
+                    false,
+                    null,
+                    null,
+                    0
             );
         } else {
             throw new ResponseStatusException(
