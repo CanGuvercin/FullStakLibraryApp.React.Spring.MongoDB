@@ -1,3 +1,4 @@
+// src/pages/BookDetailPage.tsx
 import { useParams } from "react-router-dom";
 import { useBookDetailQuery } from "../hooks/useBookDetailQuery";
 import LoanButton from "../components/books/LoanButton";
@@ -12,36 +13,17 @@ export default function BookDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded">
-      {/* Kapak ve temel bilgiler */}
-      <div className="flex gap-6">
-        {book.coverUrl && (
-          <img
-            src={book.coverUrl}
-            alt={book.title}
-            className="w-40 h-56 object-cover rounded"
-          />
-        )}
-        <div>
-          <h2 className="text-2xl font-semibold mb-1">{book.title}</h2>
-          <p className="text-gray-700 mb-2">
-            by {book.authors?.join(", ") || "Unknown Author"}
-          </p>
-          <p className="text-sm text-gray-500 mb-4">
-            Tags: {book.tags?.join(", ") || "No tags"}
-          </p>
-          <p className="text-gray-700 mb-6">{book.description}</p>
+      {/* ... diğer book info ... */}
 
-          {/* 💥 Poseidon’un mızrağı burada HEMİDE 4 BAŞLI HEHEHHE */}
-          <LoanButton
-            availableCopyId={book.availableCopyId}
-            userHasLoan={book.userHasLoan}
-            userHasHold={book.userHasHold}
-            currentHoldId={book.currentHoldId}
-          />
-        </div>
-      </div>
+      <LoanButton
+        bookId={book.id}
+        availableCopyId={book.availableCopyId}
+        userHasLoan={book.userHasLoan}
+        userHasHold={book.userHasHold}
+        activeLoanId={book.activeLoanId}
+        activeHoldId={book.activeHoldId}
+      />
 
-      {/* Alt bilgi */}
       <div className="mt-8 border-t pt-4 text-sm text-gray-500">
         Available copies: {book.availableCount ?? 0}
       </div>

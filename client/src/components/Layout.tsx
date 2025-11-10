@@ -61,6 +61,28 @@ export default function Layout() {
           >
             Login
           </NavLink>
+
+            <NavLink
+            to="/me/loans"
+            className={({ isActive }) =>
+              isActive
+              ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
+              : "text-gray-700 hover:text-blue-500"
+            }
+            >
+            My Loans
+            </NavLink>
+
+            <NavLink
+            to="/me/holds"
+            className={({ isActive }) =>
+              isActive
+              ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
+              : "text-gray-700 hover:text-blue-500"
+            }
+            >
+            My Holds
+            </NavLink>
         </nav>
       </header>
 

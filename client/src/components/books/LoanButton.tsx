@@ -5,33 +5,26 @@ import { useCancelHoldMutation } from "../../hooks/useCancelHoldMutation";
 
 
 type LoanButtonProps = {
+  bookId: string;                 // hold için gerekli
   availableCopyId?: string | null;
   userHasLoan?: boolean;
   userHasHold?: boolean;
-  currentHoldId?: string | null;
+  activeLoanId?: string | null;   // return için
+  activeHoldId?: string | null;   // cancel hold için
 };
 
 export default function LoanButton({
+  bookId,
   availableCopyId,
   userHasLoan,
   userHasHold,
-  currentHoldId,
+  activeLoanId,
+  activeHoldId,
 }: LoanButtonProps) {
   const createLoan = useCreateLoanMutation();
   const returnLoan = useReturnLoanMutation();
   const createHold = useCreateHoldMutation();
   const cancelHold = useCancelHoldMutation();
-
-  if (userHasLoan) {
-    return (
-      <button
-        onClick={() => returnLoan.mutate(currentHoldId!)}
-        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-      >
-        Return book
-      </button>
-    );
-  }
 
   if (availableCopyId) {
     return (
@@ -44,10 +37,10 @@ export default function LoanButton({
     );
   }
 
-  if (userHasHold) {
+  if (userHasHold && activeHoldId) {
     return (
       <button
-        onClick={() => cancelHold.mutate(currentHoldId!)}
+        onClick={() => cancelHold.mutate(activeHoldId)}
         className="bg-yellow-400 text-white px-4 py-2 rounded hover:bg-yellow-500"
       >
         Cancel hold
@@ -55,9 +48,10 @@ export default function LoanButton({
     );
   }
 
+  // tüm kopyalar dolu + userHasLoan = false + userHasHold = false
   return (
     <button
-      onClick={() => createHold.mutate(currentHoldId!)}
+      onClick={() => createHold.mutate(bookId)}
       className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
     >
       Place hold

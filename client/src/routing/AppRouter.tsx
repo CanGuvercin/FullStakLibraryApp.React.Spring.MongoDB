@@ -11,6 +11,7 @@ import MyHoldsPage from "../pages/MyHoldsPage";
 import MyLoansPage from "../pages/MyLoansPage";
 
 
+
 /*function BooksPage() {
   return <div className="p-4">📚 Books Page</div>;
 }*/
@@ -46,6 +47,8 @@ export default function AppRouter() {
         <Route path="/me" element={<MyProfilePage/>}/>
         <Route path="/me/my-holdings" element={<MyHoldsPage/>}/>
         <Route path="/me/my-loans" element={<MyLoansPage/>} />
+        <Route path="/me/loans" element={<MyLoansPage />} />
+        <Route path="/me/holds" element={<MyHoldsPage />} />  
       </Route>
 
       {/* Yakalanamayan tüm rotalar */}
