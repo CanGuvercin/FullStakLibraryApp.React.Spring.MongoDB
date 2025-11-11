@@ -1,6 +1,8 @@
 package com.library.api.book;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-public interface BookRepository extends JpaRepository<Book, String> {
+@Repository
+public interface BookRepository extends MongoRepository<Book, String> {
 }
