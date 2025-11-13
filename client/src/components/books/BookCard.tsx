@@ -7,6 +7,8 @@ type BookCardProps = {
   author: string;
 };
 
+// this type bugged before, be careful 
+
 export default function BookCard({ id, title, author }: BookCardProps) {
   return (
     <div className="p-4 bg-white rounded shadow hover:shadow-md transition">
