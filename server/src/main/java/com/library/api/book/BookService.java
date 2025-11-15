@@ -26,8 +26,9 @@ public class BookService {
      * - Kitabı bul
      * - Available copies bul
      * - Kullanıcının aktif loan var mı bul
-     * - Kullanıcının active hold var mı bul
+     * - Kullanıcının active hold var mı bulacak
      * - DTO’ya dök
+     *  - MOCK DATANIN SONU ULAN
      */
     public BookDetailDto getBookDetail(User currentUser, String bookId) {
 
