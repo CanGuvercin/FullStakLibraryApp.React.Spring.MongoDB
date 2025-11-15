@@ -22,43 +22,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CustomUserDetailsService userDetailsService;
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getServletPath();
-        return path.startsWith("/api/auth") || path.startsWith("/actuator");
-
-    }
-
-
-    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
-        String path = request.getServletPath();
-        // 1) Auth endpoint'lerini tamamen bypass et
-        if (path.startsWith("/api/auth/")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String username;
 
-        // 2) Authorization header yoksa: ASLA 401 VERME, zinciri bırak
-        String authHeader = request.getHeader("Authorization");
+        // Header yoksa ya da Bearer ile başlamıyorsa → devam
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String jwt = authHeader.substring(7);
-        String username = jwtService.extractUsername(jwt); // exp/issuer vb. validasyonları içinde yap
+        jwt = authHeader.substring(7);
+        // JwtService içindeki GERÇEK metod bu:
+        username = jwtService.extractUsername(jwt);
 
-        // 3) Context boş ve token geçerliyse authenticate et
-        // 4 kasım, yine soktuğum sayfaya döndüm
+        // Context boş ise ve username varsa → security context’e doldur
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userdetails = userDetailsService.loadUserByUsername(username);
-            if (jwtService.isTokenValid(jwt, userdetails.getUsername())) {
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+            // JwtService imzasına uygun çağrı:
+            if (jwtService.isTokenValid(jwt, userDetails.getUsername())) {
+
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userdetails, null, userdetails.getAuthorities());
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
