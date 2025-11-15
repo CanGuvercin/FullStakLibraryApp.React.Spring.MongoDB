@@ -1,43 +1,104 @@
 package com.library.api.book;
 
+import com.library.api.controller.dto.BookDetailDto;
+import com.library.api.copy.Copy;
+import com.library.api.copy.CopyRepository;
+import com.library.api.exception.NotFoundException;
+import com.library.api.hold.HoldRepository;
+import com.library.api.loan.LoanRepository;
+import com.library.api.user.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class BookService {
 
-    public BookDetailDto getBookDetail(String id) {
-        if (id.equals("1")) {
-            return new BookDetailDto(
-                    "1",
-                    "Clean Code",
-                    List.of("Robert C. Martin"),
-                    List.of("Programming", "Clean Code"),
-                    "A handbook of agile software craftsmanship.",
-                    null,
-                    "copy-001",
-                    false,
-                    false,
-                    null,
-                    null,
-                    3
-            );
-        } else if (id.equals("2")) {
-            return new BookDetailDto(
-                    "2",
-                    "The Pragmatic Programmer",
-                    List.of("Andrew Hunt"),
-                    List.of("Software Engineering", "Career"),
-                    "Journey to mastery for modern developers.",
-                    null,
-                    null,
-                    false,
-                    false,
-                    null,
-                    null,
-                    0
-            );
+    private final BookRepository bookRepository;
+    private final CopyRepository copyRepository;
+    private final LoanRepository loanRepository;
+    private final HoldRepository holdRepository;
+
+    /**
+     * Kitap detay mantığı:
+     * - Kitabı bul
+     * - Available copies bul
+     * - Kullanıcının aktif loan var mı bul
+     * - Kullanıcının active hold var mı bul
+     * - DTO’ya dök
+     */
+    public BookDetailDto getBookDetail(User currentUser, String bookId) {
+
+        // --- 1) Kitabı bul ---
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new NotFoundException("Book not found"));
+
+        // --- 2) Copy'leri bul ---
+        List<Copy> copies = copyRepository.findAllByBookId(bookId);
+
+        // Available copy count
+        int availableCount = (int) copies.stream()
+                .filter(c -> c.getStatus().equals("AVAILABLE"))
+                .count();
+
+        // ilk available copy id (yoksa null)
+        String availableCopyId = copies.stream()
+                .filter(c -> c.getStatus().equals("AVAILABLE"))
+                .map(Copy::getId)
+                .findFirst()
+                .orElse(null);
+
+        // --- 3) Kullanıcının active loan durumu ---
+        boolean userHasLoan = false;
+        String activeLoanId = null;
+
+        if (currentUser != null) {
+            var activeLoanOpt =
+                    loanRepository.findByUserIdAndReturnedAtIsNull(currentUser.getId());
+
+            if (activeLoanOpt.isPresent()) {
+                var activeLoan = activeLoanOpt.get();
+
+                // Loan hangi copy'ye ait?
+                var loanCopy =
+                        copyRepository.findById(activeLoan.getCopyId()).orElse(null);
+
+                if (loanCopy != null && loanCopy.getBookId().equals(bookId)) {
+                    userHasLoan = true;
+                    activeLoanId = activeLoan.getId();
+                }
+            }
         }
-        throw new RuntimeException("Book not found");
+
+        // --- 4) Kullanıcının hold durumu ---
+        boolean userHasHold = false;
+        String activeHoldId = null;
+
+        if (currentUser != null) {
+            var holdOpt =
+                    holdRepository.findByUserIdAndBookIdAndStatus(
+                            currentUser.getId(),
+                            bookId,
+                            "QUEUED"
+                    );
+
+            if (holdOpt.isPresent()) {
+                userHasHold = true;
+                activeHoldId = holdOpt.get().getId();
+            }
+        }
+
+        // --- 5) DTO döndür ---
+        return BookDetailDto.from(
+                book,
+                availableCopyId,
+                availableCount,
+                userHasLoan,
+                userHasHold,
+                activeLoanId,
+                activeHoldId
+        );
     }
 }

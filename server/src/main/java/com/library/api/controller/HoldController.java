@@ -1,43 +1,55 @@
 package com.library.api.controller;
 
+import com.library.api.controller.dto.CreateHoldRequest;
+import com.library.api.controller.dto.MyHoldDto;
+import com.library.api.hold.Hold;
+import com.library.api.hold.HoldService;
+import com.library.api.user.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/holds")
 @RequiredArgsConstructor
+@RequestMapping("/api/holds")
 public class HoldController {
 
-    private final HoldService service;
+    private final HoldService holdService;
 
-    // POST /api/holds  — rezervasyon yap
-    @PostMapping
-    @PreAuthorize("hasRole('MEMBER')")
-    public HoldDto create(@RequestBody CreateHoldDto dto) {
-        return service.create(dto.getBookId());
-    }
-
-    // GET /api/holds/me — kullanıcının rezervasyonları
+    /**
+     * Kullanıcının tüm hold'larını getirir.
+     */
     @GetMapping("/me")
-    @PreAuthorize("hasRole('MEMBER')")
-    public List<HoldDto> myHolds() {
-        return service.getMyHolds();
+    public List<MyHoldDto> getMyHolds(@AuthenticationPrincipal User currentUser) {
+        return holdService.getMyHolds(currentUser)
+                .stream()
+                .map(MyHoldDto::from)
+                .toList();
     }
 
-    // POST /api/holds/{id}/cancel — kullanıcı iptal eder
-    @PostMapping("/{id}/cancel")
-    @PreAuthorize("hasRole('MEMBER')")
-    public HoldDto cancel(@PathVariable String id) {
-        return service.cancel(id);
+    /**
+     * Hold oluşturma
+     */
+    @PostMapping
+    public MyHoldDto createHold(
+            @AuthenticationPrincipal User currentUser,
+            @RequestBody CreateHoldRequest request
+    ) {
+        Hold hold = holdService.createHold(currentUser, request.getBookId());
+        return MyHoldDto.from(hold);
     }
 
-    // POST /api/holds/{id}/fulfill — admin onaylar (kitap teslim sırasında)
-    @PostMapping("/{id}/fulfill")
-    @PreAuthorize("hasRole('ADMIN')")
-    public HoldDto fulfill(@PathVariable String id) {
-        return service.fulfill(id);
+    /**
+     * Hold iptal etme
+     */
+    @PostMapping("/{holdId}/cancel")
+    public MyHoldDto cancelHold(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable String holdId
+    ) {
+        Hold hold = holdService.cancelHold(currentUser, holdId);
+        return MyHoldDto.from(hold);
     }
 }

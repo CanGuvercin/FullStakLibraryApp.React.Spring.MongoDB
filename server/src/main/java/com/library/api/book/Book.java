@@ -14,6 +14,9 @@ public class Book {
     private String coverUrl;
     private List<String> authors;
     private List<String> tags;
+    private String isbn;
+    private Integer publicationYear;
+
 
     // ✅ Getter'lar (Lombok yoksa elle ekle)
     public String getId() { return id; }
@@ -22,4 +25,6 @@ public class Book {
     public String getCoverUrl() { return coverUrl; }
     public List<String> getAuthors() { return authors; }
     public List<String> getTags() { return tags; }
+    public Integer getPublicationYear () {return publicationYear; }
+    public String getIsbn () {return isbn; }
 }
