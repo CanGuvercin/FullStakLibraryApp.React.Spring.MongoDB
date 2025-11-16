@@ -1,36 +1,53 @@
 package com.library.api.controller;
 
+import com.library.api.user.User;
+import com.library.api.controller.dto.CreateLoanRequest;
+import com.library.api.controller.dto.MyLoanDto;
+import com.library.api.loan.Loan;
+import com.library.api.loan.LoanService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/loans")
 @RequiredArgsConstructor
+@RequestMapping("/api/loans")
 public class LoanController {
 
-    private final LoanService service;
+    private final LoanService loanService;
 
-    // POST /api/loans  — ödünç alma
-    @PostMapping
-    @PreAuthorize("hasRole('MEMBER')")
-    public LoanDto borrow(@RequestBody CreateLoanDto dto) {
-        return service.borrow(dto.getCopyId());
-    }
-
-    // POST /api/loans/{id}/return  — iade
-    @PostMapping("/{id}/return")
-    @PreAuthorize("hasAnyRole('MEMBER','ADMIN')")
-    public LoanDto returnLoan(@PathVariable String id) {
-        return service.returnLoan(id);
-    }
-
-    // GET /api/loans/me — kullanıcının ödünç geçmişi
+    /**
+     * Kullanıcının tüm loan'larını getirir.
+     */
     @GetMapping("/me")
-    @PreAuthorize("hasRole('MEMBER')")
-    public List<LoanDto> myLoans() {
-        return service.getMyLoans();
+    public List<MyLoanDto> getMyLoans(@AuthenticationPrincipal User currentUser) {
+        return loanService.getMyLoans(currentUser)
+                .stream()
+                .map(MyLoanDto::from)
+                .toList();
+    }
+
+    /**
+     * Borrow (ödünç alma)
+     */
+    @PostMapping
+    public MyLoanDto borrow(@AuthenticationPrincipal User currentUser,
+                            @RequestBody CreateLoanRequest request) {
+
+        Loan loan = loanService.borrow(currentUser, request.getCopyId());
+        return MyLoanDto.from(loan);
+    }
+
+    /**
+     * Loan iade etme
+     */
+    @PostMapping("/{loanId}/return")
+    public MyLoanDto returnLoan(@AuthenticationPrincipal User currentUser,
+                                @PathVariable String loanId) {
+
+        Loan loan = loanService.returnLoan(currentUser, loanId);
+        return MyLoanDto.from(loan);
     }
 }

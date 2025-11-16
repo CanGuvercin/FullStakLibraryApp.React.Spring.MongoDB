@@ -1,7 +1,8 @@
 package com.library.api.auth;
 
-
 import com.library.api.security.JwtService;
+import com.library.api.user.User;
+import com.library.api.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +29,7 @@ public class AuthService {
                 .fullName(fullName)
                 .email(email)
                 .passwordHash(passwordEncoder.encode(password))
-                .role(Role.MEMBER)
+                .role("MEMBER")                               // 🔥 String olarak
                 .createdAt(Instant.now())
                 .build();
 
