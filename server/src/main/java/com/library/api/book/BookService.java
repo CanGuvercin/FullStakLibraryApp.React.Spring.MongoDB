@@ -1,6 +1,7 @@
 package com.library.api.book;
 
 import com.library.api.controller.dto.BookDetailDto;
+import com.library.api.controller.dto.BookListItemDto;
 import com.library.api.copy.Copy;
 import com.library.api.copy.CopyRepository;
 import com.library.api.exception.NotFoundException;
@@ -102,4 +103,14 @@ public class BookService {
                 activeHoldId
         );
     }
+
+    public List<BookListItemDto> getBooks(String query) {
+        return bookRepository.search(query)
+                .stream()
+                .map(BookListItemDto::from)
+                .toList();
+    }
+
+    //checking control 17 november
+
 }
