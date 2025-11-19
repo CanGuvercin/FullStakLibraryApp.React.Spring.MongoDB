@@ -7,9 +7,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * 409 Conflict durumları için özel exception.
  * İş kuralı ihlallerinde kullanılır.
  */
-@ResponseStatus(HttpStatus.CONFLICT)
-public class ValidationException extends RuntimeException {
 
+public class ValidationException extends RuntimeException {
     public ValidationException(String message) {
         super(message);
     }

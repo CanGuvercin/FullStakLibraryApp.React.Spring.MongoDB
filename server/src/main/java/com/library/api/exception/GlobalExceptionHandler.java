@@ -1,51 +1,51 @@
 package com.library.api.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /**
-     * 404 Not Found
-     */
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Object> handleNotFound(NotFoundException ex) {
-        return buildResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    public ResponseEntity<ApiError> handleNotFound(NotFoundException ex, HttpServletRequest req) {
+        return buildError(HttpStatus.NOT_FOUND, ex, req);
     }
 
-    /**
-     * 409 Conflict (iş kuralı ihlalleri)
-     */
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Object> handleValidation(ValidationException ex) {
-        return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
+    public ResponseEntity<ApiError> handleValidation(ValidationException ex, HttpServletRequest req) {
+        return buildError(HttpStatus.BAD_REQUEST, ex, req);
     }
 
-    /**
-     * Yakalanmamış diğer tüm hatalar → 500 Internal Server Error
-     */
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflict(ConflictException ex, HttpServletRequest req) {
+        return buildError(HttpStatus.CONFLICT, ex, req);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ApiError> handleUnauthorized(UnauthorizedException ex, HttpServletRequest req) {
+        return buildError(HttpStatus.UNAUTHORIZED, ex, req);
+    }
+
+    // Fallback – yakalanmayan hatalar
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleGeneral(Exception ex) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest req) {
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, ex, req);
     }
 
-    /**
-     * Her response için ortak JSON formatı oluşturur
-     */
-    private ResponseEntity<Object> buildResponse(HttpStatus status, String message) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", status.value());
-        body.put("error", status.getReasonPhrase());
-        body.put("message", message);
-        body.put("timestamp", Instant.now().toString());
+    private ResponseEntity<ApiError> buildError(HttpStatus status, Exception ex, HttpServletRequest req) {
+        ApiError error = ApiError.builder()
+                .timestamp(Instant.now())
+                .status(status.value())
+                .error(status.name())
+                .message(ex.getMessage())
+                .path(req.getRequestURI())
+                .build();
 
-        return new ResponseEntity<>(body, status);
+        return new ResponseEntity<>(error, status);
     }
 }
