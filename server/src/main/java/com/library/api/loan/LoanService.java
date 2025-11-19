@@ -1,9 +1,12 @@
 package com.library.api.loan;
 
+import com.library.api.book.Book;
+import com.library.api.book.BookRepository;
 import com.library.api.copy.Copy;
 import com.library.api.copy.CopyRepository;
 import com.library.api.exception.NotFoundException;
 import com.library.api.exception.ValidationException;
+import com.library.api.loan.dto.MyLoanDto;
 import com.library.api.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,42 +21,42 @@ public class LoanService {
 
     private final LoanRepository loanRepository;
     private final CopyRepository copyRepository;
+    private final BookRepository bookRepository;
 
-    // Ödünç süresi (gün)
     private static final int LOAN_PERIOD_DAYS = 14;
 
     /**
-     * Kullanıcının tüm loan'larını getirir (aktif + geçmiş).
+     * Kullanıcının tüm loanlarını DTO olarak döndürür.
      */
-    public List<Loan> getMyLoans(User currentUser) {
-        return loanRepository.findAllByUserIdOrderByLoanedAtDesc(currentUser.getId());
+    public List<MyLoanDto> getMyLoans(User currentUser) {
+
+        return loanRepository
+                .findAllByUserIdOrderByLoanedAtDesc(currentUser.getId())
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
 
     /**
-     * Ödünç verme (borrow) işlemi.
-     * İş kuralları:
-     * 1) Copy AVAILABLE olmalı
-     * 2) Kullanıcıda aktif loan olmamalı
-     * 3) Copy zaten loaned ise 409
+     * Borrow (ödünç alma)
      */
-    public Loan borrow(User currentUser, String copyId) {
+    public MyLoanDto borrow(User currentUser, String copyId) {
 
-        // Copy var mı?
+        // Copy kontrol
         Copy copy = copyRepository.findById(copyId)
                 .orElseThrow(() -> new NotFoundException("Copy not found"));
 
-        // Copy zaten LOANED veya HOLD durumunda olamaz
-        if (!copy.getStatus().equals("AVAILABLE")) {
+        if (!"AVAILABLE".equals(copy.getStatus())) {
             throw new ValidationException("Copy is not available");
         }
 
-        // Kullanıcının aktif loan'ı var mı?
+        // User'ın aktif loan'ı var mı?
         loanRepository.findByUserIdAndReturnedAtIsNull(currentUser.getId())
                 .ifPresent(l -> {
                     throw new ValidationException("You already have an active loan.");
                 });
 
-        // Copy başka bir aktif loan'da mı?
+        // Copy başka loan’da mı?
         loanRepository.findByCopyIdAndReturnedAtIsNull(copyId)
                 .ifPresent(l -> {
                     throw new ValidationException("Copy is already loaned.");
@@ -71,42 +74,67 @@ public class LoanService {
                 .returnedAt(null)
                 .build();
 
-        // Copy durumunu güncelle
+        // Copy LOANED yapılır
         copy.setStatus("LOANED");
         copyRepository.save(copy);
 
-        return loanRepository.save(loan);
+        Loan saved = loanRepository.save(loan);
+        return toDto(saved);
     }
 
     /**
-     * İade işlemi (return loan)
+     * Loan iade etme
      */
-    public Loan returnLoan(User currentUser, String loanId) {
+    public MyLoanDto returnLoan(User currentUser, String loanId) {
 
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new NotFoundException("Loan not found"));
 
-        // Kullanıcı kendi loan'ını iade etmeli (admin için kontrolü controller’da açık bırakabiliriz)
         if (!loan.getUserId().equals(currentUser.getId())) {
-            throw new ValidationException("You cannot return another user's loan.");
+            throw new ValidationException("You cannot return another user’s loan.");
         }
 
-        // Zaten iade edilmişse:
         if (loan.getReturnedAt() != null) {
             throw new ValidationException("This loan is already returned.");
         }
 
-        // returnedAt işaretle
+        // Loan güncelle
         loan.setReturnedAt(Instant.now());
         loanRepository.save(loan);
 
-        // Copy'yi AVAILABLE yap
+        // Copy AVAILABLE yapılır
         Copy copy = copyRepository.findById(loan.getCopyId())
                 .orElseThrow(() -> new NotFoundException("Copy not found"));
 
         copy.setStatus("AVAILABLE");
         copyRepository.save(copy);
 
-        return loan;
+        // TODO: Hold kuyruğunu tetikle (sonraki adım)
+        // holdService.handleReturnEvent(copy.getBookId());
+
+        return toDto(loan);
+    }
+
+    /**
+     * ENTITY → DTO mapping
+     */
+    private MyLoanDto toDto(Loan loan) {
+
+        // Copy üzerinden bookId çekiyoruz
+        Copy copy = copyRepository.findById(loan.getCopyId())
+                .orElseThrow(() -> new NotFoundException("Copy not found for loan"));
+
+        Book book = bookRepository.findById(copy.getBookId())
+                .orElseThrow(() -> new NotFoundException("Book not found for loan"));
+
+        return MyLoanDto.builder()
+                .id(loan.getId())
+                .bookId(book.getId())
+                .bookTitle(book.getTitle())
+                .copyId(loan.getCopyId())
+                .loanedAt(loan.getLoanedAt().toString())
+                .dueAt(loan.getDueAt().toString())
+                .returnedAt(loan.getReturnedAt() == null ? null : loan.getReturnedAt().toString())
+                .build();
     }
 }

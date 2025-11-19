@@ -1,6 +1,5 @@
 package com.library.api.hold.dto;
 
-import com.library.api.hold.Hold;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,15 +9,7 @@ public class MyHoldDto {
 
     private String id;
     private String bookId;
+    private String bookTitle;
     private String queuedAt;
-    private String status;
-
-    public static MyHoldDto from(Hold hold) {
-        return MyHoldDto.builder()
-                .id(hold.getId())
-                .bookId(hold.getBookId())
-                .queuedAt(hold.getQueuedAt().toString())
-                .status(hold.getStatus())
-                .build();
-    }
+    private String status; // QUEUED / NOTIFIED / EXPIRED / FULFILLED
 }

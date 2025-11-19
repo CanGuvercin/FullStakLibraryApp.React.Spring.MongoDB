@@ -1,6 +1,5 @@
 package com.library.api.book.dto;
 
-import com.library.api.book.Book;
 import lombok.Builder;
 import lombok.Data;
 
@@ -16,11 +15,11 @@ public class BookDetailDto {
     private List<String> authors;
     private String description;
     private String isbn;
-    private int publicationYear;
+    private Integer publicationYear;   // opsiyonel - null olabilir
 
     // --------- Copy bilgileri ---------
-    private String availableCopyId;
-    private int availableCount;
+    private int availableCount;   // kaç tane müsait copy var
+    private int totalCopies;      // toplam copy sayısı
 
     // --------- Kullanıcıya özel bilgiler ---------
     private boolean userHasLoan;
@@ -28,29 +27,5 @@ public class BookDetailDto {
     private String activeLoanId;
     private String activeHoldId;
 
-    // --------- Factory metod ---------
-    public static BookDetailDto from(
-            Book book,
-            String availableCopyId,
-            int availableCount,
-            boolean userHasLoan,
-            boolean userHasHold,
-            String activeLoanId,
-            String activeHoldId
-    ) {
-        return BookDetailDto.builder()
-                .id(book.getId())
-                .title(book.getTitle())
-                .authors(book.getAuthors())
-                .description(book.getDescription())
-                .isbn(book.getIsbn())
-                .publicationYear(book.getPublicationYear())
-                .availableCopyId(availableCopyId)
-                .availableCount(availableCount)
-                .userHasLoan(userHasLoan)
-                .userHasHold(userHasHold)
-                .activeLoanId(activeLoanId)
-                .activeHoldId(activeHoldId)
-                .build();
-    }
+
 }

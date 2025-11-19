@@ -1,6 +1,5 @@
 package com.library.api.loan.dto;
 
-import com.library.api.loan.Loan;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,25 +8,11 @@ import lombok.Data;
 public class MyLoanDto {
 
     private String id;
-    private String bookTitle; // Şimdilik null dönecek, copy üzerinden çekilecek
+    private String bookId;
+    private String bookTitle;
     private String copyId;
     private String loanedAt;
     private String dueAt;
-    private String status;
+    private String returnedAt; // null değilse RETURNED demek
 
-    public static MyLoanDto from(Loan loan) {
-
-        String status = loan.getReturnedAt() == null
-                ? "ACTIVE"
-                : "RETURNED";
-
-        return MyLoanDto.builder()
-                .id(loan.getId())
-                .copyId(loan.getCopyId())
-                .bookTitle(null)  // Book service ile bağlayınca dolduracağız, mışız.
-                .loanedAt(loan.getLoanedAt().toString())
-                .dueAt(loan.getDueAt().toString())
-                .status(status)
-                .build();
-    }
 }

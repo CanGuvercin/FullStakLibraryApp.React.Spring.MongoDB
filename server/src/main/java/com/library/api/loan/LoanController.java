@@ -21,10 +21,7 @@ public class LoanController {
      */
     @GetMapping("/me")
     public List<MyLoanDto> getMyLoans(@AuthenticationPrincipal User currentUser) {
-        return loanService.getMyLoans(currentUser)
-                .stream()
-                .map(MyLoanDto::from)
-                .toList();
+        return loanService.getMyLoans(currentUser);
     }
 
     /**
@@ -33,9 +30,7 @@ public class LoanController {
     @PostMapping
     public MyLoanDto borrow(@AuthenticationPrincipal User currentUser,
                             @RequestBody CreateLoanRequest request) {
-
-        Loan loan = loanService.borrow(currentUser, request.getCopyId());
-        return MyLoanDto.from(loan);
+        return loanService.borrow(currentUser, request.getCopyId());
     }
 
     /**
@@ -44,8 +39,6 @@ public class LoanController {
     @PostMapping("/{loanId}/return")
     public MyLoanDto returnLoan(@AuthenticationPrincipal User currentUser,
                                 @PathVariable String loanId) {
-
-        Loan loan = loanService.returnLoan(currentUser, loanId);
-        return MyLoanDto.from(loan);
+        return loanService.returnLoan(currentUser, loanId);
     }
 }

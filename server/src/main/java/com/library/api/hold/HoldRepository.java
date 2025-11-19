@@ -17,4 +17,7 @@ public interface HoldRepository extends MongoRepository<Hold, String> {
 
     // Bir kitabın hold kuyruğu (admin veya otomatik çağırma için)
     List<Hold> findAllByBookIdAndStatusOrderByQueuedAtAsc(String bookId, String status);
+
+    Optional<Hold> findFirstByBookIdAndStatusOrderByQueuedAtAsc(String bookId, String status);
+
 }

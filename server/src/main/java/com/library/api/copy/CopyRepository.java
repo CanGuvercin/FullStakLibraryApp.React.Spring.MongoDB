@@ -17,4 +17,7 @@ public interface CopyRepository extends MongoRepository<Copy, String> {
 
     // AVAILABLE olan tek bir kopyayı bul (ilk bulunan)
     Optional<Copy> findFirstByBookIdAndStatus(String bookId, String status);
+
+    long countByBookIdAndStatus(String bookId, String status);
+
 }
