@@ -13,36 +13,32 @@ public class CopyService {
     private final CopyRepository copyRepository;
 
     /**
-     * Bir kitabın tüm kopyalarını getirir.
+     * Bir kitabın tüm fiziksel kopyaları
      */
     public List<Copy> getCopiesByBookId(String bookId) {
         return copyRepository.findAllByBookId(bookId);
     }
 
     /**
-     * Bir kitabın AVAILABLE olan kopya sayısını döner.
+     * Bir kitabın AVAILABLE kopya sayısı
      */
-    public int getAvailableCount(String bookId) {
-        return copyRepository.findAllByBookIdAndStatus(bookId, "AVAILABLE").size();
+    public long getAvailableCount(String bookId) {
+        return copyRepository.countByBookIdAndStatus(bookId, CopyStatus.AVAILABLE);
     }
 
     /**
-     * Bir kitabın AVAILABLE olan ilk kopyasını döner.
+     * AVAILABLE ilk kopyayı getir
      */
     public Copy getFirstAvailableCopy(String bookId) {
-        return copyRepository.findFirstByBookIdAndStatus(bookId, "AVAILABLE")
+        return copyRepository.findFirstByBookIdAndStatus(bookId, CopyStatus.AVAILABLE)
                 .orElse(null);
     }
 
     /**
-     * ID üzerinden copy bulur, yoksa hata fırlatır.
+     * Copy bulamazsa hata fırlat
      */
     public Copy getCopyOrThrow(String copyId) {
         return copyRepository.findById(copyId)
                 .orElseThrow(() -> new NotFoundException("Copy not found"));
     }
-
-/**
- * Copy'nin durumunu güncelleyip veritabanın*
- **/
 }

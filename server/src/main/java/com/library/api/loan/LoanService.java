@@ -4,6 +4,7 @@ import com.library.api.book.Book;
 import com.library.api.book.BookRepository;
 import com.library.api.copy.Copy;
 import com.library.api.copy.CopyRepository;
+import com.library.api.copy.CopyStatus;
 import com.library.api.exception.NotFoundException;
 import com.library.api.exception.ValidationException;
 import com.library.api.loan.dto.MyLoanDto;
@@ -23,13 +24,12 @@ public class LoanService {
     private final CopyRepository copyRepository;
     private final BookRepository bookRepository;
 
-    private static final int LOAN_PERIOD_DAYS = 14;
+    private final int LOAN_PERIOD_DAYS = 14;
 
     /**
-     * Kullanıcının tüm loanlarını DTO olarak döndürür.
+     * Kullanıcının tüm loan'larını DTO olarak döndürür.
      */
     public List<MyLoanDto> getMyLoans(User currentUser) {
-
         return loanRepository
                 .findAllByUserIdOrderByLoanedAtDesc(currentUser.getId())
                 .stream()
@@ -46,7 +46,7 @@ public class LoanService {
         Copy copy = copyRepository.findById(copyId)
                 .orElseThrow(() -> new NotFoundException("Copy not found"));
 
-        if (!"AVAILABLE".equals(copy.getStatus())) {
+        if (!CopyStatus.AVAILABLE.equals(copy.getStatus())) {
             throw new ValidationException("Copy is not available");
         }
 
@@ -75,11 +75,11 @@ public class LoanService {
                 .build();
 
         // Copy LOANED yapılır
-        copy.setStatus("LOANED");
+        copy.setStatus(CopyStatus.LOANED);
         copyRepository.save(copy);
 
-        Loan saved = loanRepository.save(loan);
-        return toDto(saved);
+        Loan savedLoan = loanRepository.save(loan);
+        return toDto(savedLoan);
     }
 
     /**
@@ -106,14 +106,15 @@ public class LoanService {
         Copy copy = copyRepository.findById(loan.getCopyId())
                 .orElseThrow(() -> new NotFoundException("Copy not found"));
 
-        copy.setStatus("AVAILABLE");
+        copy.setStatus(CopyStatus.AVAILABLE);
         copyRepository.save(copy);
 
-        // TODO: Hold kuyruğunu tetikle (sonraki adım)
+        // TODO: Hold kuyruğu tetiklenecek
         // holdService.handleReturnEvent(copy.getBookId());
 
         return toDto(loan);
     }
+
 
     /**
      * ENTITY → DTO mapping
@@ -134,7 +135,11 @@ public class LoanService {
                 .copyId(loan.getCopyId())
                 .loanedAt(loan.getLoanedAt().toString())
                 .dueAt(loan.getDueAt().toString())
-                .returnedAt(loan.getReturnedAt() == null ? null : loan.getReturnedAt().toString())
+                .returnedAt(
+                        loan.getReturnedAt() == null
+                                ? null
+                                : loan.getReturnedAt().toString()
+                )
                 .build();
     }
 }

@@ -3,6 +3,7 @@ package com.library.api.hold;
 import com.library.api.book.Book;
 import com.library.api.book.BookRepository;
 import com.library.api.copy.CopyRepository;
+import com.library.api.copy.CopyStatus;
 import com.library.api.exception.NotFoundException;
 import com.library.api.exception.ValidationException;
 import com.library.api.hold.dto.MyHoldDto;
@@ -25,7 +26,8 @@ public class HoldService {
      * Kullanıcının tüm hold'larını DTO olarak döndürür.
      */
     public List<MyHoldDto> getMyHolds(User currentUser) {
-        return holdRepository.findAllByUserIdOrderByQueuedAtDesc(currentUser.getId())
+        return holdRepository
+                .findAllByUserIdOrderByQueuedAtDesc(currentUser.getId())
                 .stream()
                 .map(this::toDto)
                 .toList();
@@ -33,14 +35,16 @@ public class HoldService {
 
     /**
      * Hold oluşturma kuralları:
-     * 1) Kitabın AVAILABLE copy’si varsa hold yapılamaz
+     * 1) Kitabın AVAILABLE copy’si varsa hold YASAK (manifest kuralı)
      * 2) Kullanıcı aynı kitabı QUEUED veya READY durumunda tekrar hold edemez
      * 3) Yeni hold → QUEUED
      */
     public MyHoldDto createHold(User currentUser, String bookId) {
 
-        // 1) Kitap AVAILABLE mı?
-        long availableCount = copyRepository.countByBookIdAndStatus(bookId, "AVAILABLE");
+        // 1) AVAILABLE kopya varsa hold yapılamaz
+        long availableCount =
+                copyRepository.countByBookIdAndStatus(bookId, CopyStatus.AVAILABLE);
+
         if (availableCount > 0) {
             throw new ValidationException("Book has available copies. Hold is not allowed.");
         }
@@ -56,7 +60,7 @@ public class HoldService {
                     throw new ValidationException("You already have a ready hold for this book.");
                 });
 
-        // 3) Yeni hold oluştur
+        // 3) Yeni hold
         Hold hold = Hold.builder()
                 .userId(currentUser.getId())
                 .bookId(bookId)
@@ -90,25 +94,24 @@ public class HoldService {
     }
 
     /**
-     * Loan iade edildiğinde çağrılacak
-     * BookId verilir → sıradaki hold READY yapılır
+     * Loan iade edildiğinde çağrılır → sıradaki hold READY yapılır
      */
     public void handleReturnEvent(String bookId) {
 
-        // Sıradaki hold
-        var nextHoldOpt = holdRepository.findFirstByBookIdAndStatusOrderByQueuedAtAsc(bookId, "QUEUED");
+        var nextHoldOpt =
+                holdRepository.findFirstByBookIdAndStatusOrderByQueuedAtAsc(bookId, "QUEUED");
 
         if (nextHoldOpt.isPresent()) {
             Hold hold = nextHoldOpt.get();
             hold.setStatus("READY");
             holdRepository.save(hold);
 
-            // TODO: Notification sistemi bağlanırsa buraya hook konacak
+            // TODO: Notification hook
         }
     }
 
     /**
-     * Hold → DTO
+     * Hold → DTO mapping
      */
     private MyHoldDto toDto(Hold hold) {
 

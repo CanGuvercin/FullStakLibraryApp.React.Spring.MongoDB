@@ -17,15 +17,14 @@ public class Copy {
     @Id
     private String id;
 
-    // Hangi kitaba ait?
     private String bookId;
 
-    // Kütüphanedeki fiziki kopyaya ait barkod (şimdilik optional)
+    // Fiziksel barkod (opsiyonel)
     private String barcode;
 
-    // AVAILABLE, LOANED, HOLD
+    // CopyStatus.AVAILABLE | LOANED | HOLD
     private String status;
 
-    // Şube/konum (şimdilik MAIN)
+    // Şube bilgisi (şimdilik MAIN)
     private String location;
 }

@@ -12,12 +12,12 @@ public interface CopyRepository extends MongoRepository<Copy, String> {
     // Bir kitabın tüm kopyaları
     List<Copy> findAllByBookId(String bookId);
 
-    // Bir kitabın AVAILABLE kopyaları
+    // Bir kitabın belirli statüdeki kopyaları
     List<Copy> findAllByBookIdAndStatus(String bookId, String status);
 
-    // AVAILABLE olan tek bir kopyayı bul (ilk bulunan)
+    // AVAILABLE olan ilk fiziksel kopya
     Optional<Copy> findFirstByBookIdAndStatus(String bookId, String status);
 
+    // AVAILABLE sayısını hızlıca almak için
     long countByBookIdAndStatus(String bookId, String status);
-
 }
