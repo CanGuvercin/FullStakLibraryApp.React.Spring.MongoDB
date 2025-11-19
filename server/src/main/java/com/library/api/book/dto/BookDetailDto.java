@@ -1,4 +1,4 @@
-package com.library.api.controller.dto;
+package com.library.api.book.dto;
 
 import com.library.api.book.Book;
 import lombok.Builder;

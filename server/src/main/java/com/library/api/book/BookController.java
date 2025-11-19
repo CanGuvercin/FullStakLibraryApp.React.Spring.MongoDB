@@ -1,8 +1,7 @@
-package com.library.api.controller;
+package com.library.api.book;
 
-import com.library.api.book.BookService;
-import com.library.api.controller.dto.BookDetailDto;
-import com.library.api.controller.dto.BookListItemDto;
+import com.library.api.book.dto.BookDetailDto;
+import com.library.api.book.dto.BookListItemDto;
 import com.library.api.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

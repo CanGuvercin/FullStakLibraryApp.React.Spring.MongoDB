@@ -1,10 +1,8 @@
-package com.library.api.controller;
+package com.library.api.loan;
 
+import com.library.api.loan.dto.CreateLoanRequest;
+import com.library.api.loan.dto.MyLoanDto;
 import com.library.api.user.User;
-import com.library.api.controller.dto.CreateLoanRequest;
-import com.library.api.controller.dto.MyLoanDto;
-import com.library.api.loan.Loan;
-import com.library.api.loan.LoanService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

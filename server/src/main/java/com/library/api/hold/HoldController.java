@@ -1,9 +1,7 @@
-package com.library.api.controller;
+package com.library.api.hold;
 
-import com.library.api.controller.dto.CreateHoldRequest;
-import com.library.api.controller.dto.MyHoldDto;
-import com.library.api.hold.Hold;
-import com.library.api.hold.HoldService;
+import com.library.api.hold.dto.CreateHoldRequest;
+import com.library.api.hold.dto.MyHoldDto;
 import com.library.api.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

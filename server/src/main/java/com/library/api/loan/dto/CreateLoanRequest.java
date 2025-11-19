@@ -1,4 +1,4 @@
-package com.library.api.controller.dto;
+package com.library.api.loan.dto;
 
 import lombok.Data;
 
