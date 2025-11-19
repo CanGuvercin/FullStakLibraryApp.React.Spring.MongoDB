@@ -105,12 +105,19 @@ public class BookService {
     }
 
     public List<BookListItemDto> getBooks(String query) {
-        return bookRepository.search(query)
-                .stream()
+        List<Book> books;
+
+        if (query == null || query.isBlank()) {
+            books = bookRepository.findAll();
+        } else {
+            books = bookRepository.findByTitleContainingIgnoreCase(query);
+        }
+
+        return books.stream()
                 .map(BookListItemDto::from)
                 .toList();
     }
 
-    //checking control 17 november
+    //checking control 17 november2763
 
 }

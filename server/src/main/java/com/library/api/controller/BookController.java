@@ -38,4 +38,12 @@ public class BookController {
     ) {
         return bookService.getBookDetail(currentUser, id);
     }
+
+    @GetMapping
+    public List<BookListItemDto> listBooks(
+            @RequestParam(required = false) String query
+    ) {
+        return bookService.getBooks(query);
+    }
+
 }
