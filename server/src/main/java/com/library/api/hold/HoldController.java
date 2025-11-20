@@ -16,38 +16,24 @@ public class HoldController {
 
     private final HoldService holdService;
 
-    /**
-     * Kullanıcının tüm hold'larını getirir.
-     */
     @GetMapping("/me")
     public List<MyHoldDto> getMyHolds(@AuthenticationPrincipal User currentUser) {
-        return holdService.getMyHolds(currentUser)
-                .stream()
-                .map(MyHoldDto::from)
-                .toList();
+        return holdService.getMyHolds(currentUser);
     }
 
-    /**
-     * Hold oluşturma
-     */
     @PostMapping
     public MyHoldDto createHold(
             @AuthenticationPrincipal User currentUser,
             @RequestBody CreateHoldRequest request
     ) {
-        Hold hold = holdService.createHold(currentUser, request.getBookId());
-        return MyHoldDto.from(hold);
+        return holdService.createHold(currentUser, request.getBookId());
     }
 
-    /**
-     * Hold iptal etme
-     */
     @PostMapping("/{holdId}/cancel")
     public MyHoldDto cancelHold(
             @AuthenticationPrincipal User currentUser,
             @PathVariable String holdId
     ) {
-        Hold hold = holdService.cancelHold(currentUser, holdId);
-        return MyHoldDto.from(hold);
+        return holdService.cancelHold(currentUser, holdId);
     }
 }

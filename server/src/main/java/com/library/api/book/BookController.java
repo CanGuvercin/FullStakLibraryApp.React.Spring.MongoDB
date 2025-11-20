@@ -8,7 +8,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
@@ -17,9 +16,7 @@ public class BookController {
 
     private final BookService bookService;
 
-    /**
-     * Kitap listesi
-     */
+    // Kitap listesi
     @GetMapping
     public List<BookListItemDto> getBooks(
             @RequestParam(required = false) String query
@@ -27,9 +24,7 @@ public class BookController {
         return bookService.getBooks(query);
     }
 
-    /**
-     * Tek kitap detayı
-     */
+    // Tek kitap detayı
     @GetMapping("/{id}")
     public BookDetailDto getBookDetail(
             @PathVariable String id,
@@ -37,12 +32,5 @@ public class BookController {
     ) {
         return bookService.getBookDetail(currentUser, id);
     }
-
-    @GetMapping
-    public List<BookListItemDto> listBooks(
-            @RequestParam(required = false) String query
-    ) {
-        return bookService.getBooks(query);
-    }
-
 }
+
