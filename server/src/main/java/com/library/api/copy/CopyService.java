@@ -41,4 +41,18 @@ public class CopyService {
         return copyRepository.findById(copyId)
                 .orElseThrow(() -> new NotFoundException("Copy not found"));
     }
+
+    public List<Copy> createCopies(String bookId, int count) {
+        List<Copy> copies = java.util.stream.IntStream.range(0, count)
+                .mapToObj(i -> Copy.builder()
+                        .bookId(bookId)
+                        .status(CopyStatus.AVAILABLE)
+                        .location("MAIN")
+                        .build()
+                )
+                .toList();
+
+        return copyRepository.saveAll(copies);
+    }
+
 }
