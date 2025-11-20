@@ -2,6 +2,7 @@ package com.library.api.book;
 
 import com.library.api.book.dto.BookDetailDto;
 import com.library.api.book.dto.BookListItemDto;
+import com.library.api.book.dto.UpsertBookDto;
 import com.library.api.copy.Copy;
 import com.library.api.copy.CopyRepository;
 import com.library.api.exception.NotFoundException;
@@ -10,6 +11,7 @@ import com.library.api.loan.LoanRepository;
 import com.library.api.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.library.api.book.dto.UpsertBookDto;
 
 import java.util.List;
 
@@ -116,4 +118,37 @@ public class BookService {
                 )
                 .toList();
     }
+
+    public BookDetailDto createBook(UpsertBookDto dto) {
+
+        Book book = Book.builder()
+                .isbn(dto.getIsbn())
+                .title(dto.getTitle())
+                .description(dto.getDescription())
+                .coverUrl(dto.getCoverUrl())
+                .authors(dto.getAuthors())
+                .tags(dto.getTags())
+                .publicationYear(dto.getPublicationYear())
+                .build();
+
+        Book saved = bookRepository.save(book);
+
+        return BookDetailDto.builder()
+                .id(saved.getId())
+                .title(saved.getTitle())
+                .description(saved.getDescription())
+                .isbn(saved.getIsbn())
+                .publicationYear(saved.getPublicationYear())
+                .authors(saved.getAuthors())
+                .coverUrl(saved.getCoverUrl())
+                .tags(saved.getTags())
+                .availableCount(0)
+                .totalCopies(0)
+                .userHasLoan(false)
+                .userHasHold(false)
+                .activeLoanId(null)
+                .activeHoldId(null)
+                .build();
+    }
+
 }

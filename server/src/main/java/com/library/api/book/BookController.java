@@ -2,8 +2,10 @@ package com.library.api.book;
 
 import com.library.api.book.dto.BookDetailDto;
 import com.library.api.book.dto.BookListItemDto;
+import com.library.api.book.dto.UpsertBookDto;
 import com.library.api.user.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +33,13 @@ public class BookController {
             @AuthenticationPrincipal User currentUser
     ) {
         return bookService.getBookDetail(currentUser, id);
+    }
+
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public BookDetailDto createBook(@RequestBody UpsertBookDto dto) {
+        return bookService.createBook(dto);
     }
 }
 

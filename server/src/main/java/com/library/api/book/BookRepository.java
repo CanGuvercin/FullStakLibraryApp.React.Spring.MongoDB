@@ -14,3 +14,5 @@ public interface BookRepository extends MongoRepository<Book, String> {
     // Basit arama: title içinde geçen kitap
     List<Book> findByTitleContainingIgnoreCase(String title);
 }
+
+
