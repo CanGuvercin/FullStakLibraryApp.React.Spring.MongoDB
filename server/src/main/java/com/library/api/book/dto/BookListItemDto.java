@@ -9,9 +9,10 @@ import java.util.List;
 @Builder
 public class BookListItemDto {
 
-    private String id;
+    private String id;      // primary
+    private String bookId;  // alias
+
     private String title;
     private List<String> authors;
-    private int availableCopies;  // listede gerekli
-
+    private int availableCopies;
 }

@@ -118,6 +118,7 @@ public class BookService {
         return books.stream()
                 .map(book -> BookListItemDto.builder()
                         .id(book.getId())
+                        .bookId(book.getId())
                         .title(book.getTitle())
                         .authors(book.getAuthors())
                         .availableCopies(

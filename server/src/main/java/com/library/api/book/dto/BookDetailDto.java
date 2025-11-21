@@ -5,12 +5,12 @@ import lombok.Data;
 import com.library.api.copy.dto.CopyDto;
 
 import java.util.List;
-
 @Data
 @Builder
 public class BookDetailDto {
 
-    private String id;
+    private String id;       // primary
+    private String bookId;   // alias - frontend rahat etsin
     private String title;
     private String description;
     private String isbn;
@@ -28,3 +28,4 @@ public class BookDetailDto {
     private String activeLoanId;
     private String activeHoldId;
 }
+

@@ -34,7 +34,7 @@ public class LoanController {
     }
 
     /**
-     * Loan iade etme
+     * Loan iade etme, 21 kasım güncelleme bu şey çalışmadı.
      */
     @PostMapping("/{loanId}/return")
     public MyLoanDto returnLoan(@AuthenticationPrincipal User currentUser,
