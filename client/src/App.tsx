@@ -1,9 +1,18 @@
-import AppRouter from './routing/AppRouter';
+import { useEffect } from "react";
+import { useThemeStore } from "./store/themeStore";
+import Layout from "./components/Layout";
 
-export default function App() {
-  return (
-    <div className="min-h-screen bg-gray-100 text-gray-800">
-      <AppRouter />
-    </div>
-  );
+function App() {
+  const theme = useThemeStore((s) => s.theme);
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (theme === "dark") root.classList.add("dark");
+    else root.classList.remove("dark");
+  }, [theme]);
+
+  return <Layout />;
 }
+
+export default App;

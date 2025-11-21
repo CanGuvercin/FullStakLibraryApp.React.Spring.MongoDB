@@ -1,18 +1,25 @@
 import { Outlet, NavLink } from "react-router-dom";
+import { useThemeStore } from "../store/themeStore";
 
 export default function Layout() {
+  const theme = useThemeStore((s) => s.theme);
+  const toggleTheme = useThemeStore((s) => s.toggleTheme);
+
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800">
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors">
       {/* Navbar */}
-      <header className="bg-white shadow-md py-4 px-8 flex justify-between items-center">
-        <h1 className="text-xl font-semibold text-blue-600">Library App</h1>
-        <nav className="space-x-6">
+      <header className="bg-white dark:bg-gray-800 shadow-md py-4 px-8 flex justify-between items-center transition-colors">
+        <h1 className="text-xl font-semibold text-blue-600 dark:text-blue-400">
+          Library App
+        </h1>
+
+        <nav className="space-x-6 flex items-center">
           <NavLink
             to="/me"
             className={({ isActive }) =>
               isActive
-                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 hover:text-blue-500"
+                ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
             }
           >
             My Profile
@@ -22,8 +29,8 @@ export default function Layout() {
             to="/books"
             className={({ isActive }) =>
               isActive
-                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 hover:text-blue-500"
+                ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
             }
           >
             Books
@@ -33,8 +40,8 @@ export default function Layout() {
             to="/members"
             className={({ isActive }) =>
               isActive
-                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 hover:text-blue-500"
+                ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
             }
           >
             Members
@@ -44,8 +51,8 @@ export default function Layout() {
             to="/settings"
             className={({ isActive }) =>
               isActive
-                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 hover:text-blue-500"
+                ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
             }
           >
             Settings
@@ -55,44 +62,52 @@ export default function Layout() {
             to="/login"
             className={({ isActive }) =>
               isActive
-                ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 hover:text-blue-500"
+                ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
             }
           >
             Login
           </NavLink>
 
-            <NavLink
+          <NavLink
             to="/me/loans"
             className={({ isActive }) =>
               isActive
-              ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-              : "text-gray-700 hover:text-blue-500"
+                ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
             }
-            >
+          >
             My Loans
-            </NavLink>
+          </NavLink>
 
-            <NavLink
+          <NavLink
             to="/me/holds"
             className={({ isActive }) =>
               isActive
-              ? "text-blue-600 font-semibold border-b-2 border-blue-600 pb-1"
-              : "text-gray-700 hover:text-blue-500"
+                ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
+                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
             }
-            >
+          >
             My Holds
-            </NavLink>
+          </NavLink>
+
+          {/* 🌙 DARK MODE SWITCH */}
+          <button
+            onClick={toggleTheme}
+            className="ml-4 px-3 py-1 rounded-full border border-gray-400 dark:border-gray-600 text-sm
+                       bg-gray-100 dark:bg-gray-700 dark:text-gray-100 text-gray-900 transition-colors"
+          >
+            {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
+          </button>
         </nav>
       </header>
 
-      {/* Sayfa içeriği */}
+      {/* Content */}
       <main className="flex-1 container mx-auto px-6 py-8">
         <Outlet />
       </main>
 
-      {/* Footer */}
-      <footer className="bg-gray-100 text-center text-sm py-3 text-gray-500">
+      <footer className="bg-gray-100 dark:bg-gray-800 text-center text-sm py-3 text-gray-500 dark:text-gray-400">
         © 2025 Library App
       </footer>
     </div>

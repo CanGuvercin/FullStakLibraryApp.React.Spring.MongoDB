@@ -1,7 +1,11 @@
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  darkMode: "class",          // Hadi bakalım ilk dark modumuz
+  content: [
+    "./index.html",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     extend: {},
   },
   plugins: [],
-}
+};
