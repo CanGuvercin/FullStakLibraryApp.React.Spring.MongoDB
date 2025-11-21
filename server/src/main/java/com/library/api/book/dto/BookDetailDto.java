@@ -2,6 +2,7 @@ package com.library.api.book.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import com.library.api.copy.dto.CopyDto;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class BookDetailDto {
 
     private int availableCount;
     private int totalCopies;
+    private List<CopyDto> copies;
 
     private boolean userHasLoan;
     private boolean userHasHold;

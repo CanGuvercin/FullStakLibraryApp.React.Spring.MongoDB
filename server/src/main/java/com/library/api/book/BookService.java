@@ -1,10 +1,9 @@
 package com.library.api.book;
 
-import com.library.api.book.dto.BookDetailDto;
-import com.library.api.book.dto.BookListItemDto;
-import com.library.api.book.dto.UpsertBookDto;
+import com.library.api.book.dto.*;
 import com.library.api.copy.Copy;
 import com.library.api.copy.CopyRepository;
+import com.library.api.copy.dto.CopyDto;
 import com.library.api.exception.NotFoundException;
 import com.library.api.hold.HoldRepository;
 import com.library.api.loan.LoanRepository;
@@ -34,11 +33,19 @@ public class BookService {
                 .orElseThrow(() -> new NotFoundException("Book not found"));
 
         // 2) Kopyalar
-        List<Copy> copies = copyRepository.findAllByBookId(bookId);
+        List<Copy> copies = copyRepository.findByBookId(bookId);
 
         int availableCount = (int) copies.stream()
                 .filter(c -> "AVAILABLE".equals(c.getStatus()))
                 .count();
+
+        List<CopyDto> copyDtos = copies.stream()
+                .map(c -> CopyDto.builder()
+                        .id(c.getId())
+                        .status(c.getStatus().toString())
+                        .location(c.getLocation())
+                        .build())
+                .toList();
 
         // 3) Kullanıcının aktif loan durumu
         boolean userHasLoan = false;
@@ -85,12 +92,14 @@ public class BookService {
                 .publicationYear(book.getPublicationYear())
                 .availableCount(availableCount)
                 .totalCopies(copies.size())
+                .copies(copyDtos)  // ← EKLENDİ
                 .userHasLoan(userHasLoan)
                 .userHasHold(userHasHold)
                 .activeLoanId(activeLoanId)
                 .activeHoldId(activeHoldId)
                 .build();
     }
+
 
 
     /**

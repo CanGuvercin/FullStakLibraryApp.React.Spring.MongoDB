@@ -15,6 +15,9 @@ public interface CopyRepository extends MongoRepository<Copy, String> {
     // Bir kitabın belirli statüdeki kopyaları
     List<Copy> findAllByBookIdAndStatus(String bookId, String status);
 
+    //ver id'yi al kitabı bilader
+    List<Copy> findByBookId(String bookId);
+
     // AVAILABLE olan ilk fiziksel kopya
     Optional<Copy> findFirstByBookIdAndStatus(String bookId, String status);
 
