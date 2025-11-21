@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -20,8 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    // JwtAuthenticationFilter ve JwtAuthEntryPoint VAR ama
-    // GEÇİCİ OLARAK KULLANMIYORUZ
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final JwtAuthEntryPoint jwtAuthEntryPoint;
 
@@ -31,16 +30,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // ⚠️ GEÇİCİ DEV MODU:
-                // BÜTÜN API'LER SERBEST
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
-                );
-
-        // 🔴 ŞİMDİLİK KAPALI:
-        // .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthEntryPoint))
-        // .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers("/api/auth/**").permitAll()
+                        // gerekiyorsa dokümantasyon vs:
+                        // .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
