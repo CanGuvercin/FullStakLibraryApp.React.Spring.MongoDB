@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useThemeStore } from "./store/themeStore";
-import Layout from "./components/Layout";
+import AppRouter from "./routing/AppRouter";
 
 function App() {
   const theme = useThemeStore((s) => s.theme);
@@ -12,7 +12,7 @@ function App() {
     else root.classList.remove("dark");
   }, [theme]);
 
-  return <Layout />;
+  return <AppRouter />;
 }
 
 export default App;
