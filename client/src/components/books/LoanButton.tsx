@@ -3,14 +3,13 @@ import { useReturnLoanMutation } from "../../hooks/useReturnLoanMutation";
 import { useCreateHoldMutation } from "../../hooks/useCreateHoldMutation";
 import { useCancelHoldMutation } from "../../hooks/useCancelHoldMutation";
 
-
 type LoanButtonProps = {
-  bookId: string;                 // hold için gerekli
+  bookId: string; // hold için gerekli
   availableCopyId?: string | null;
   userHasLoan?: boolean;
   userHasHold?: boolean;
-  activeLoanId?: string | null;   // return için
-  activeHoldId?: string | null;   // cancel hold için
+  activeLoanId?: string | null;
+  activeHoldId?: string | null;
 };
 
 export default function LoanButton({
@@ -26,6 +25,19 @@ export default function LoanButton({
   const createHold = useCreateHoldMutation();
   const cancelHold = useCancelHoldMutation();
 
+  // 1) User already borrowed this book → Return button
+  if (userHasLoan && activeLoanId) {
+    return (
+      <button
+        onClick={() => returnLoan.mutate(activeLoanId)}
+        className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+      >
+        Return book
+      </button>
+    );
+  }
+
+  // 2) There is an available copy → Loan
   if (availableCopyId) {
     return (
       <button
@@ -37,6 +49,7 @@ export default function LoanButton({
     );
   }
 
+  // 3) User has an active hold & it can be cancelled
   if (userHasHold && activeHoldId) {
     return (
       <button
@@ -48,7 +61,19 @@ export default function LoanButton({
     );
   }
 
-  // tüm kopyalar dolu + userHasLoan = false + userHasHold = false
+  // 4) User has a hold but it cannot be cancelled — read-only state
+  if (userHasHold && !activeHoldId) {
+    return (
+      <button
+        disabled
+        className="bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed"
+      >
+        Already on hold
+      </button>
+    );
+  }
+
+  // 5) All copies loaned and user has no hold → Place hold
   return (
     <button
       onClick={() => createHold.mutate(bookId)}

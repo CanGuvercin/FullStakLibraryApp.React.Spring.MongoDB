@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 type AuthState = {
   user: null | { name: string; email: string };
-  token: string | null;
+  token: null | string;
   setUser: (user: AuthState["user"]) => void;
   setToken: (token: string | null) => void;
   logout: () => void;
