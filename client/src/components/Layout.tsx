@@ -6,7 +6,7 @@ export default function Layout() {
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0f172a] text-gray-900 dark:text-gray-100">
       {/* Navbar */}
       <header className="bg-white dark:bg-gray-800 shadow-md py-4 px-8 flex justify-between items-center transition-colors">
         <h1 className="text-xl font-semibold text-blue-600 dark:text-blue-400">

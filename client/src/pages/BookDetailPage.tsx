@@ -12,7 +12,11 @@ export default function BookDetailPage() {
   if (!book) return <p className="p-4 text-gray-500">Book not found.</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded space-y-6">
+    <div className="
+      max-w-3xl mx-auto p-6 rounded shadow
+     bg-white dark:bg-gray-800
+     text-gray-900 dark:text-gray-100
+    ">
 
       {/* Title + Authors */}
       <div>

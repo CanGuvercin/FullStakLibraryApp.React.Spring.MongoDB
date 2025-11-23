@@ -13,19 +13,28 @@ type BookCardProps = {
 // 23 november, dont worry bugged many times
 
 
-export default function BookCard({  id, title, authors, availableCopies,}: BookCardProps) {
+export default function BookCard({ id, title, authors, availableCopies, }: BookCardProps) {
   return (
     <Link
       to={`/books/${id}`}
-      className="block p-4 bg-white rounded shadow hover:shadow-md transition"
-    >
+      className="p-4 rounded shadow 
+       bg-white dark:bg-gray-800 
+       text-gray-900 dark:text-gray-100
+       border border-gray-200 dark:border-gray-700"
+      >
       <h3 className="text-lg font-semibold">{title}</h3>
 
-      <p className="text-gray-600 mt-1">
+      <p className="
+       bg-oklch(95% 0.052 163.051) dark:bg-gray-800 
+       text-gray-900 dark:text-gray-100
+      ">
         {authors?.length > 0 ? authors.join(", ") : "Unknown Author"}
       </p>
 
-      <p className="text-gray-700 mt-1">
+      <p className="
+      bg-oklch(95% 0.052 163.051) dark:bg-gray-800 
+       text-gray-900 dark:text-gray-100
+      ">
         Available copies: {availableCopies}
       </p>
     </Link>
