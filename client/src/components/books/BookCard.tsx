@@ -17,7 +17,8 @@ export default function BookCard({ id, title, authors, availableCopies, }: BookC
   return (
     <Link
       to={`/books/${id}`}
-      className="p-4 rounded shadow 
+      className="
+      p-4 rounded shadow 
        bg-white dark:bg-gray-800 
        text-gray-900 dark:text-gray-100
        border border-gray-200 dark:border-gray-700"

@@ -18,10 +18,19 @@ export default function BookDetailPage() {
      text-gray-900 dark:text-gray-100
     ">
 
-      {/* Title + Authors */}
+      {/* Title + Authors, şu title daha havalı olmalı be. 23 kasım */}
+      
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{book.title}</h1>
-        <p className="text-gray-700 text-lg mt-1">{book.authors.join(", ")}</p>
+        <h1 className="
+        p-4 rounded shadow 
+       bg-white dark:bg-gray-800 
+       text-gray-900 dark:text-gray-100
+       border border-gray-200 dark:border-gray-700"
+        > {book.title} </h1>
+        <p className="
+          bg-oklch(95% 0.052 163.051) dark:bg-gray-800 
+         text-gray-900 dark:text-gray-100
+        ">{book.authors.join(", ")}</p>
       </div>
 
       {/* Cover */}
