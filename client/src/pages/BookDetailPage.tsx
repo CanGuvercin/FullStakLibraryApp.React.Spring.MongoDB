@@ -1,7 +1,7 @@
-// src/pages/BookDetailPage.tsx
 import { useParams } from "react-router-dom";
 import { useBookDetailQuery } from "../hooks/useBookDetailQuery";
 import LoanButton from "../components/books/LoanButton";
+import type { BookDetailDto, CopyDto } from "../types/BookDetail"; // TYPE IMPORT, direct declaration is better?
 
 export default function BookDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -12,9 +12,57 @@ export default function BookDetailPage() {
   if (!book) return <p className="p-4 text-gray-500">Book not found.</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded">
-      {/* ... diğer book info ... */}
+    <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded space-y-6">
 
+      {/* Title + Authors */}
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">{book.title}</h1>
+        <p className="text-gray-700 text-lg mt-1">{book.authors.join(", ")}</p>
+      </div>
+
+      {/* Cover */}
+      {book.coverUrl && (
+        <img
+          src={book.coverUrl}
+          alt={book.title}
+          className="w-48 rounded shadow"
+        />
+      )}
+
+      {/* Metadata */}
+      <div className="space-y-1 text-gray-700">
+        <p><strong>ISBN:</strong> {book.isbn}</p>
+        <p><strong>Publication Year:</strong> {book.publicationYear ?? "Unknown"}</p>
+        <p><strong>Total copies:</strong> {book.totalCopies}</p>
+        <p><strong>Available copies:</strong> {book.availableCount}</p>
+      </div>
+
+      {/* Description */}
+      {book.description && (
+        <div>
+          <h2 className="font-semibold text-lg text-gray-900 mb-2">Description</h2>
+          <p className="text-gray-700">{book.description}</p>
+        </div>
+      )}
+
+      {/* Tags */}
+      {book.tags?.length > 0 && (
+        <div>
+          <h2 className="font-semibold text-lg text-gray-900 mb-2">Tags</h2>
+          <div className="flex gap-2 flex-wrap">
+            {book.tags.map((tag:string) => (
+              <span
+                key={tag}
+                className="px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-sm"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Loan Button */}
       <LoanButton
         bookId={book.id}
         availableCopyId={book.availableCopyId}
@@ -24,8 +72,21 @@ export default function BookDetailPage() {
         activeHoldId={book.activeHoldId}
       />
 
-      <div className="mt-8 border-t pt-4 text-sm text-gray-500">
-        Available copies: {book.availableCount ?? 0}
+      {/* Copies List */}
+      <div>
+        <h2 className="font-semibold text-lg text-gray-900 mb-2">Copies</h2>
+        <ul className="space-y-2">
+          {book.copies?.map((c:CopyDto) => (
+            <li
+              key={c.id}
+              className="p-3 border rounded text-sm text-gray-700 flex justify-between"
+            >
+              <span>Copy ID: {c.id}</span>
+              <span>Status: {c.status}</span>
+              <span>Location: {c.location}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
