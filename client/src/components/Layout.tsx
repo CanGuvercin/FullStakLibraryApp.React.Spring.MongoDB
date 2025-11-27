@@ -84,7 +84,7 @@ export default function Layout() {
             Settings
           </NavLink>
           <NavLink
-            to="/me/loans"
+            to="/me/my-loans"
             className={({ isActive }) =>
               isActive
                 ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
@@ -95,7 +95,7 @@ export default function Layout() {
           </NavLink>
 
           <NavLink
-            to="/me/holds"
+            to="/me/my-holds"
             className={({ isActive }) =>
               isActive
                 ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
