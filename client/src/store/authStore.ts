@@ -1,17 +1,39 @@
 import { create } from "zustand";
 
-type AuthState = {
-  user: null | { name: string; email: string };
-  token: null | string;
-  setUser: (user: AuthState["user"]) => void;
-  setToken: (token: string | null) => void;
+type Role = "ADMIN" | "MEMBER" | null;
+
+interface AuthState {
+  token: string | null;
+  user: any | null;
+  role: Role;
+  isAuthenticated: boolean;
+  login: (token: string, user: any, role: Role) => void;
   logout: () => void;
-};
+}
 
 export const useAuthStore = create<AuthState>((set) => ({
+  token: localStorage.getItem("token"),
   user: null,
-  token: null,
-  setUser: (user) => set({ user }),
-  setToken: (token) => set({ token }),
-  logout: () => set({ user: null, token: null }),
+  role: null,
+  isAuthenticated: !!localStorage.getItem("token"),
+
+  login: (token, user, role) => {
+    localStorage.setItem("token", token);
+    set({
+      token,
+      user,
+      role,
+      isAuthenticated: true,
+    });
+  },
+
+  logout: () => {
+    localStorage.removeItem("token");
+    set({
+      token: null,
+      user: null,
+      role: null,
+      isAuthenticated: false,
+    });
+  },
 }));
