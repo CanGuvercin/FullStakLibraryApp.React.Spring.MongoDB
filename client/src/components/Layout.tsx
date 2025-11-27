@@ -1,4 +1,4 @@
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, Link } from "react-router-dom";
 import { useThemeStore } from "../store/themeStore";
 import { useEffect } from "react";
 
@@ -29,9 +29,11 @@ export default function Layout() {
           transition-colors
         "
       >
-        <h1 className="text-xl font-semibold text-blue-600 dark:text-blue-300">
-          Library App
-        </h1>
+        <Link to="/">
+          <h1 className="text-xl font-semibold text-blue-800 dark:text-blue-300 cursor-pointer hover:opacity-80 transition">
+            Library App
+          </h1>
+        </Link>
 
         <nav className="space-x-6 flex items-center">
           <NavLink
