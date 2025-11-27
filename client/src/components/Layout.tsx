@@ -1,15 +1,35 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useThemeStore } from "../store/themeStore";
+import { useEffect } from "react";
 
 export default function Layout() {
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
 
+  // <html class="dark"> ile Tailwind dark mode'u senkron tut
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }, [theme]);
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0f172a] text-gray-900 dark:text-gray-100">
+    <div
+      className="
+        min-h-screen 
+        bg-slate-50 dark:bg-slate-950
+        text-slate-900 dark:text-slate-100
+        transition-colors
+      "
+    >
       {/* Navbar */}
-      <header className="bg-white dark:bg-gray-800 shadow-md py-4 px-8 flex justify-between items-center transition-colors">
-        <h1 className="text-xl font-semibold text-blue-600 dark:text-blue-400">
+      <header
+        className="
+          bg-white dark:bg-slate-900 
+          shadow-md py-4 px-8 
+          flex justify-between items-center
+          transition-colors
+        "
+      >
+        <h1 className="text-xl font-semibold text-blue-600 dark:text-blue-300">
           Library App
         </h1>
 
@@ -19,7 +39,7 @@ export default function Layout() {
             className={({ isActive }) =>
               isActive
                 ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                : "text-slate-700 dark:text-slate-300 hover:text-blue-500"
             }
           >
             My Profile
@@ -30,7 +50,7 @@ export default function Layout() {
             className={({ isActive }) =>
               isActive
                 ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                : "text-slate-700 dark:text-slate-300 hover:text-blue-500"
             }
           >
             Books
@@ -41,7 +61,7 @@ export default function Layout() {
             className={({ isActive }) =>
               isActive
                 ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                : "text-slate-700 dark:text-slate-300 hover:text-blue-500"
             }
           >
             Members
@@ -52,7 +72,7 @@ export default function Layout() {
             className={({ isActive }) =>
               isActive
                 ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                : "text-slate-700 dark:text-slate-300 hover:text-blue-500"
             }
           >
             Settings
@@ -63,7 +83,7 @@ export default function Layout() {
             className={({ isActive }) =>
               isActive
                 ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                : "text-slate-700 dark:text-slate-300 hover:text-blue-500"
             }
           >
             Login
@@ -74,7 +94,7 @@ export default function Layout() {
             className={({ isActive }) =>
               isActive
                 ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                : "text-slate-700 dark:text-slate-300 hover:text-blue-500"
             }
           >
             My Loans
@@ -85,17 +105,22 @@ export default function Layout() {
             className={({ isActive }) =>
               isActive
                 ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-gray-700 dark:text-gray-300 hover:text-blue-500"
+                : "text-slate-700 dark:text-slate-300 hover:text-blue-500"
             }
           >
             My Holds
           </NavLink>
 
-          {/* 🌙 DARK MODE SWITCH */}
+          {/* Theme Switch */}
           <button
             onClick={toggleTheme}
-            className="ml-4 px-3 py-1 rounded-full border border-gray-400 dark:border-gray-600 text-sm
-                       bg-gray-100 dark:bg-gray-700 dark:text-gray-100 text-gray-900 transition-colors"
+            className="
+              ml-4 px-3 py-1 rounded-full border 
+              border-slate-400 dark:border-slate-600 
+              bg-slate-100 dark:bg-slate-700
+              text-slate-900 dark:text-slate-100 
+              text-sm transition-colors
+            "
           >
             {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
           </button>
@@ -107,7 +132,15 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <footer className="bg-gray-100 dark:bg-gray-800 text-center text-sm py-3 text-gray-500 dark:text-gray-400">
+      {/* Footer */}
+      <footer
+        className="
+          bg-slate-100 dark:bg-slate-900 
+          text-center text-sm py-3
+          text-slate-600 dark:text-slate-400
+          transition-colors
+        "
+      >
         © 2025 Library App
       </footer>
     </div>
