@@ -1,10 +1,14 @@
 import { Outlet, NavLink, Link } from "react-router-dom";
 import { useThemeStore } from "../store/themeStore";
 import { useEffect } from "react";
+import { useAuthStore } from "../store/authStore";
+
 
 export default function Layout() {
   const theme = useThemeStore((s) => s.theme);
   const toggleTheme = useThemeStore((s) => s.toggleTheme);
+  const { isAuthenticated, logout } = useAuthStore();
+
 
   // <html class="dark"> ile Tailwind dark mode'u senkron tut
   useEffect(() => {
@@ -79,18 +83,6 @@ export default function Layout() {
           >
             Settings
           </NavLink>
-
-          <NavLink
-            to="/login"
-            className={({ isActive }) =>
-              isActive
-                ? "text-blue-600 dark:text-blue-300 font-semibold border-b-2 border-blue-600 pb-1"
-                : "text-slate-700 dark:text-slate-300 hover:text-blue-500"
-            }
-          >
-            Login
-          </NavLink>
-
           <NavLink
             to="/me/loans"
             className={({ isActive }) =>
@@ -112,6 +104,23 @@ export default function Layout() {
           >
             My Holds
           </NavLink>
+          {isAuthenticated ? (
+            <>
+              <NavLink to="/me">My Profile</NavLink>
+              <button
+                onClick={logout}
+                className="text-red-500 hover:text-red-600 ml-4"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/register">Register</NavLink>
+            </>
+          )}
+
 
           {/* Theme Switch */}
           <button

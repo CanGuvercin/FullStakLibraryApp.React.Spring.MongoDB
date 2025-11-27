@@ -1,39 +1,63 @@
 import { create } from "zustand";
 
-type Role = "ADMIN" | "MEMBER" | null;
+function isValidToken(token: string | null): boolean {
+  if (!token) return false;
+
+  // JWT format kontrolü
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+
+  try {
+    // Token içindeki exp kontrolü
+    const payload = JSON.parse(atob(parts[1]));
+    const now = Math.floor(Date.now() / 1000);
+
+    if (payload.exp && payload.exp < now) {
+      return false; // token expired
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 interface AuthState {
   token: string | null;
-  user: any | null;
-  role: Role;
   isAuthenticated: boolean;
-  login: (token: string, user: any, role: Role) => void;
+  login: (token: string) => void;
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  token: localStorage.getItem("token"),
-  user: null,
-  role: null,
-  isAuthenticated: !!localStorage.getItem("token"),
+export const useAuthStore = create<AuthState>((set) => {
+  let token = localStorage.getItem("token");
 
-  login: (token, user, role) => {
-    localStorage.setItem("token", token);
-    set({
-      token,
-      user,
-      role,
-      isAuthenticated: true,
-    });
-  },
+  // Sayfa yüklenirken token kontrolü yap
+  const valid = isValidToken(token);
 
-  logout: () => {
+  if (!valid) {
     localStorage.removeItem("token");
-    set({
-      token: null,
-      user: null,
-      role: null,
-      isAuthenticated: false,
-    });
-  },
-}));
+    token = null;
+  }
+
+  return {
+    token,
+    isAuthenticated: valid,
+
+    login: (newToken) => {
+      localStorage.setItem("token", newToken);
+      set({
+        token: newToken,
+        isAuthenticated: true,
+      });
+    },
+
+    logout: () => {
+      localStorage.removeItem("token");
+      set({
+        token: null,
+        isAuthenticated: false,
+      });
+    },
+  };
+});

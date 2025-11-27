@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../components/Layout";
 
+import HomePage from "../pages/HomaPage";
 import BooksPage from "../pages/BooksPage";
 import RegisterPage from "../pages/RegisterPage";
 import LoginPage from "../pages/LoginPage";
@@ -15,7 +16,6 @@ import MyLoansPage from "../pages/MyLoansPage";
 import RequireAuth from "./RequireAuth";
 import RequireAdmin from "./RequireAdmin";
 
-// Optional helper pages
 function MembersPage() { return <div className="p-4">👥 Members Page</div>; }
 function SettingsPage() { return <div className="p-4">⚙️ Settings Page</div>; }
 function NotFoundPage() { return <div className="p-4 text-red-500">404 - Page Not Found</div>; }
@@ -24,10 +24,10 @@ export default function AppRouter() {
   return (
     <Routes>
 
-      {/* Root redirect */}
-      <Route path="/" element={<Navigate to="/books" replace />} />
+      {/* PUBLIC HOME */}
+      <Route path="/" element={<HomePage />} />
 
-      {/* Genel Layout */}
+      {/* Layout wrapper */}
       <Route element={<Layout />}>
 
         {/* PUBLIC ROUTES */}
@@ -38,13 +38,9 @@ export default function AppRouter() {
         <Route element={<RequireAuth />}>
           <Route path="/books" element={<BooksPage />} />
           <Route path="/books/:id" element={<BookDetailPage />} />
-
           <Route path="/me" element={<MyProfilePage />} />
-          <Route path="/me/my-holdings" element={<MyHoldsPage />} />
           <Route path="/me/my-loans" element={<MyLoansPage />} />
-          <Route path="/me/loans" element={<MyLoansPage />} />
-          <Route path="/me/holds" element={<MyHoldsPage />} />
-
+          <Route path="/me/my-holdings" element={<MyHoldsPage />} />
           <Route path="/members" element={<MembersPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
@@ -57,7 +53,7 @@ export default function AppRouter() {
 
       </Route>
 
-      {/* Catch-all not found */}
+      {/* 404 */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

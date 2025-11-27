@@ -16,12 +16,11 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const data = await authApi.login(email, password);
-
-      loginStore.login(data.accessToken, data.user, data.role);
-
-      navigate("/"); // homepage
-    } catch (err: any) {
+      const { token } = await authApi.login(email, password);
+      loginStore.login(token);
+      navigate("/"); // HomePage
+    } catch (err) {
+      console.error("Login error:", err);
       setError("Invalid email or password");
     }
   };
