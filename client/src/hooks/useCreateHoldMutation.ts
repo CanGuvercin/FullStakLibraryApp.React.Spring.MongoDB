@@ -6,7 +6,10 @@ export function useCreateHoldMutation() {
   return useMutation({
     mutationFn: (bookId: string) => holdsApi.createHold(bookId),
     onSuccess: () => {
+      // Invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: ["myHolds"] });
+      queryClient.invalidateQueries({ queryKey: ["book"] }); // All book details
+      queryClient.invalidateQueries({ queryKey: ["books"] }); // Books list
     },
   });
 }

@@ -6,7 +6,10 @@ export function useCancelHoldMutation() {
   return useMutation({
     mutationFn: (id: string) => holdsApi.cancelHold(id),
     onSuccess: () => {
+      // Invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: ["myHolds"] });
+      queryClient.invalidateQueries({ queryKey: ["book"] }); // All book details
+      queryClient.invalidateQueries({ queryKey: ["books"] }); // Books list
     },
   });
 }

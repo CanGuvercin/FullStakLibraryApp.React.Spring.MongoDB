@@ -38,7 +38,7 @@ public class LoanController {
      */
     @PostMapping("/{loanId}/return")
     public MyLoanDto returnLoan(@AuthenticationPrincipal User currentUser,
-                                @PathVariable String loanId) {
+                                @PathVariable("loanId") String loanId) { //loanId ekledim bakalım 28 kasım)
         return loanService.returnLoan(currentUser, loanId);
     }
 }

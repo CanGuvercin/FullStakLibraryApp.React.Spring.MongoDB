@@ -1,5 +1,7 @@
 package com.library.api.book.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Builder;
 import lombok.Data;
 import com.library.api.copy.dto.CopyDto;
@@ -7,6 +9,7 @@ import com.library.api.copy.dto.CopyDto;
 import java.util.List;
 @Data
 @Builder
+@JsonNaming(PropertyNamingStrategies.LowerCamelCaseStrategy.class)
 public class BookDetailDto {
 
     private String id;       // primary
@@ -23,6 +26,7 @@ public class BookDetailDto {
     private int totalCopies;
     private List<CopyDto> copies;
 
+    private String availableCopyId;
     private boolean userHasLoan;
     private boolean userHasHold;
     private String activeLoanId;

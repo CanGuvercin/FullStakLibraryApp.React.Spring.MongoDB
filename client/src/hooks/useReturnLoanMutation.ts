@@ -6,7 +6,10 @@ export function useReturnLoanMutation() {
   return useMutation({
     mutationFn: (id: string) => loansApi.returnLoan(id),
     onSuccess: () => {
+      // Invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: ["myLoans"] });
+      queryClient.invalidateQueries({ queryKey: ["book"] }); // All book details
+      queryClient.invalidateQueries({ queryKey: ["books"] }); // Books list
     },
   });
 }

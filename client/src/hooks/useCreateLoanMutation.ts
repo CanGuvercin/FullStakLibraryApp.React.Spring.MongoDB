@@ -6,7 +6,10 @@ export function useCreateLoanMutation() {
   return useMutation({
     mutationFn: (copyId: string) => loansApi.createLoan(copyId),
     onSuccess: () => {
+      // Invalidate all relevant queries
       queryClient.invalidateQueries({ queryKey: ["myLoans"] });
+      queryClient.invalidateQueries({ queryKey: ["book"] }); // All book details
+      queryClient.invalidateQueries({ queryKey: ["books"] }); // Books list
     },
   });
 }
