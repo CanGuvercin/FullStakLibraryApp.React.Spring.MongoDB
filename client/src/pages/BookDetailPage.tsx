@@ -13,7 +13,7 @@ export default function BookDetailPage() {
     return <p className="p-4 text-red-500">Failed to load book details.</p>;
   if (!book)
     return <p className="p-4 text-gray-600 dark:text-gray-300">Book not found.</p>;
-
+// dev was halted 3 dec 25
   return (
     <div
       className="
