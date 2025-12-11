@@ -85,13 +85,16 @@ public class HoldService {
             throw new ValidationException("You cannot cancel another user's hold.");
         }
 
-        if (!hold.getStatus().equals("QUEUED")) {
+        String status = hold.getStatus();
+        if (status == null || !"QUEUED".equalsIgnoreCase(status.trim())) {
             throw new ValidationException("Only queued holds can be cancelled.");
         }
 
         hold.setStatus("CANCELLED");
+
         return toDto(holdRepository.save(hold));
     }
+
 
     /**
      * Loan iade edildiğinde çağrılır → sıradaki hold READY yapılır
