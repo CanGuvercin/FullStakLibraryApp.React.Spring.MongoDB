@@ -1,5 +1,6 @@
 package com.library.api.auth;
 
+import com.library.api.auth.dto.AuthResponse;
 import com.library.api.security.JwtService;
 import com.library.api.user.User;
 import com.library.api.user.UserRepository;
@@ -38,7 +39,8 @@ public class AuthService {
         return jwtService.generateToken(user.getEmail(), null);
     }
 
-    public String login(String email, String password) {
+    public AuthResponse login(String email, String password) {
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );
@@ -46,6 +48,11 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        return jwtService.generateToken(user.getEmail(), null);
-    }
-}
+        String token = jwtService.generateToken(user.getEmail(), null);
+
+        return new AuthResponse(
+                token,
+                user.getEmail(),
+                user.getRole()   // STRING → "ADMIN"
+        );
+    }}

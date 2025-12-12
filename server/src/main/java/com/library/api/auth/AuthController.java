@@ -1,5 +1,7 @@
 package com.library.api.auth;
 
+import com.library.api.auth.dto.AuthResponse;
+import com.library.api.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +20,23 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
-        String token = authService.login(request.getEmail(), request.getPassword());
-        return ResponseEntity.ok(token);
-    }
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
 
+        User user = authService.authenticateAndGetUser(
+                request.getEmail(),
+                request.getPassword()
+        );
+
+        String token = jwtService.generateToken(user);
+
+        return ResponseEntity.ok(
+                new AuthResponse(
+                        token,
+                        user.getEmail(),
+                        user.getRole().name() // "ADMIN"
+                )
+        );
+    }
 
 
 }
